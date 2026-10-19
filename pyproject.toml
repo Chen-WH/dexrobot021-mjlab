@@ -1,0 +1,92 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dexrobot021-mjlab"
+version = "0.1.0"
+description = "In-hand cube and cylinder spinning with the DexRobot DexHand021, trained in mjlab and deployed on the real hand."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = "Apache-2.0"
+keywords = ["reinforcement-learning", "robotics", "dexterous-manipulation", "mujoco", "mjlab", "sim-to-real"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: POSIX :: Linux",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Robotics",
+]
+dependencies = [
+  "mjlab==1.6.0",
+  "torch>=2.7.0",
+]
+
+[project.optional-dependencies]
+# Hardware deployment. The DexHand driver (`pyzlg_dexhand`) and the Daheng camera
+# SDK (`gxipy`) are not on PyPI; install them from the vendors (see README).
+deploy = [
+  "opencv-python>=4.8",
+  "pupil-apriltags>=1.0.4",
+  "pyrealsense2>=2.55",
+  "pyyaml>=6.0",
+]
+dev = [
+  "pytest>=8",
+  "pyyaml>=6.0",
+  "ruff>=0.6",
+]
+
+[project.scripts]
+dexrobot021-list = "dexrobot021_mjlab.scripts.list_envs:main"
+dexrobot021-train = "dexrobot021_mjlab.scripts.train:main"
+dexrobot021-play = "dexrobot021_mjlab.scripts.play:main"
+
+# Lets mjlab's own `train` / `play` / `list-envs` find these tasks too.
+[project.entry-points."mjlab.tasks"]
+dexrobot021_mjlab = "dexrobot021_mjlab.tasks"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dexrobot021_mjlab = [
+  "assets/robots/dexhand021/mjcf/*.xml",
+  "assets/robots/dexhand021/meshes/*.STL",
+  "assets/objects/*/mjcf/*.xml",
+  "assets/objects/*/textures/*.png",
+]
+
+[tool.uv]
+required-environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[[tool.uv.index]]
+url = "https://pypi.org/simple"
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128", marker = "sys_platform == 'linux'" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+indent-width = 2
+line-length = 100
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B"]
+# mjlab task functions use SceneEntityCfg defaults by convention.
+ignore = ["B008"]
+
+[tool.ruff.lint.per-file-ignores]
+# The toy plant in the stall-guard test is written compactly on purpose.
+"tests/test_stallguard.py" = ["E701", "E702"]

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Training outputs
+logs/
+outputs/
+wandb/
+videos/
+MUJOCO_LOG.TXT
+
+# Rig-specific calibration (written by the deploy tools; see deploy/calib/README.md)
+deploy/calib/*.json
+deploy/calib/*.npz
+
+# Hardware run records written next to a bundle
+checkpoints/*/run_*.json
+checkpoints/*/run_*.npz
+
+# Agents
+.claude/
+CLAUDE.md
+AGENTS.md

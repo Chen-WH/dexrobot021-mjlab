@@ -1,0 +1,37 @@
+dexrobot021-mjlab
+Copyright 2026 ChenWH
+
+This product includes or builds on software and assets developed by others:
+
+- mjlab (Apache-2.0)
+  https://github.com/mujocolab/mjlab
+
+- MuJoCo and MuJoCo Warp (Apache-2.0)
+  https://github.com/google-deepmind/mujoco
+  https://github.com/google-deepmind/mujoco_warp
+
+- rsl-rl (BSD-3-Clause)
+  Copyright (c) 2021-2026, ETH Zurich and NVIDIA CORPORATION
+  https://github.com/leggedrobotics/rsl_rl
+
+- mjlab_hand (in-hand rotation task recipe that the training setup follows)
+  https://github.com/ruoyiqiao/mjlab_hand
+
+- pupil-apriltags (BSD-2-Clause, used by the deployment code)
+  https://github.com/pupil-labs/apriltags
+
+- DexHand021 meshes (Apache-2.0), Copyright DexRobot
+  https://github.com/DexRobot/dexrobot_urdf
+  https://huggingface.co/DEXROBOT/group-sim-assets
+  The visual meshes in src/dexrobot021_mjlab/assets/robots/dexhand021/meshes are
+  unmodified copies of dexrobot_urdf's meshes/dexhand021_simplified; the *_convex
+  collision meshes are convex hulls of them. The MJCF, mimic
+  couplings and drive model were built for this project on top of them.
+
+- MuJoCo MPC (Apache-2.0), Copyright Google DeepMind
+  https://github.com/google-deepmind/mujoco_mpc
+  The cube model (src/dexrobot021_mjlab/assets/objects/cube/mjcf) follows its
+  reorientation cube; the textures in src/dexrobot021_mjlab/assets/objects/cube/textures
+  are unmodified copies of mjpc/tasks/common_assets/reorientation_cube_textures.
+
+This NOTICE file is provided per the requirements of Apache License 2.0 section 4(d).

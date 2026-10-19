@@ -1,0 +1,34 @@
+<mujoco model="reorientation_cylinder_d60_h100">
+  <asset>
+    <material name="pine" rgba="0.76 0.58 0.36 1"/>
+    <material name="red" rgba="1 0 0 1"/>
+    <material name="green" rgba="0 1 0 1"/>
+    <material name="blue" rgba="0 0 1 1"/>
+  </asset>
+  <option timestep="0.0025" gravity="0 0 0"/>
+
+  <worldbody>
+    <light pos="0 0 1"/>
+    <body name="cylinder" pos="0 0 0.5">
+      <freejoint/>
+      <!-- The bench cylinder: diameter 60 mm, length 100 mm, 118.65 g (measured). -->
+      <geom name="cylinder" type="cylinder" size="0.03 0.05" mass="0.11865"
+            material="pine" friction="0.05 0.0001 0.0001"/>
+
+      <!-- Body-fixed frame visualization: +X red, +Y green, +Z blue. -->
+      <geom name="axis_x" type="box" size="0.03 0.002 0.002" pos="0.03 0 0"
+            material="red" contype="0" conaffinity="0" density="0"/>
+      <geom name="axis_y" type="box" size="0.002 0.03 0.002" pos="0 0.03 0"
+            material="green" contype="0" conaffinity="0" density="0"/>
+      <geom name="axis_z" type="box" size="0.002 0.002 0.05" pos="0 0 0.05"
+            material="blue" contype="0" conaffinity="0" density="0"/>
+    </body>
+  </worldbody>
+
+  <sensor>
+    <framepos name="cylinder_position" objtype="body" objname="cylinder"/>
+    <framequat name="cylinder_orientation" objtype="body" objname="cylinder"/>
+    <framelinvel name="cylinder_linear_velocity" objtype="body" objname="cylinder"/>
+    <frameangvel name="cylinder_angular_velocity" objtype="body" objname="cylinder"/>
+  </sensor>
+</mujoco>

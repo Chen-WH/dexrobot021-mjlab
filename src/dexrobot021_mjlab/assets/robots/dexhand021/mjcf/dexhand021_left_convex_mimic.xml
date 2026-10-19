@@ -1,0 +1,360 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="dexhand021_left_convex_mimic">
+  <visual>
+    <global offwidth="1920" offheight="1080" />
+  </visual>
+  <option gravity="0 0 -9.81" iterations="100" solver="Newton" integrator="implicit" timestep="0.001" />
+  <default>
+    <!-- Drive parameters follow Yuan et al., "Development of the Bioinspired
+         Tendon-Driven DexHand 021 With Proprioceptive Compliance Control",
+         IEEE RA-L 11(1), 2026.  Motor -> planetary reducer -> worm gear ->
+         capstan -> cable, so the joints are stiff and poorly backdrivable.
+         The classes below name the three drive groups. -->
+    <joint damping="0.05" armature="0.002" frictionloss="0" />
+    <!-- Cable-driven flexion: the MCP (*_2) and PIP (*_3) of all five
+         fingers, ten of the twelve motors. -->
+    <!-- frictionloss: the worm gear is self-locking.  No number is published;
+         this is ~11-17 % of the group's stall torque and is randomised in
+         training. -->
+    <default class="tendon_flexion">
+      <joint damping="0.035" armature="0.002" frictionloss="0.07" />
+    </default>
+    <!-- Geared direct drive: thumb rotation (motor + worm) and four-finger
+         abduction (motor + ball screw + crank linkage).  Two motors. -->
+    <default class="direct_drive">
+      <joint damping="0.035" armature="0.002" frictionloss="0.042" />
+    </default>
+    <!-- No motor: driven through a rigid linkage by <equality>.  The DIP (*_4)
+         follows the PIP (*_3); ring/little abduction follows the index.
+         DIP = g(PIP) is a polynomial fit to the vendor's joint mapping table
+         (rms 0.004 deg over PIP <= 1.39 rad).  PIP range 0-1.3 rad is the
+         firmware limit. -->
+    <!-- No transmission upstream, so only pin-and-linkage friction. -->
+    <default class="passive_linkage">
+      <joint damping="0.035" armature="2e-4" frictionloss="0.014" />
+    </default>
+    <!-- friction = "tangential torsional rolling".
+
+         tangential 1.0: typical for a rubber pad on a plastic object, and the
+         nominal the training randomiser scales around.
+
+         torsional 0.003 with condim="4" so that it is active: without torsional
+         friction a contact offers no resistance to rotation about its own
+         normal, which lets two fingertips spin an object unrealistically fast.
+         MuJoCo's torsional coefficient is a length (~ (2/3) mu a for a contact
+         patch of radius a); 0.003 is a ~4.5 mm patch, a lightly loaded
+         fingertip.  Randomised in training.
+
+         rolling 0.002 is inert at condim="4" (it needs 6).
+
+         priority 1: when two geoms' priorities differ, MuJoCo uses the higher
+         one's friction/condim/solref/solimp outright instead of mixing them.
+         The objects ship with priority 0, so this side governs every
+         hand-object contact and contact randomisation on the hand reaches the
+         contact unchanged. -->
+    <geom condim="4" solref="0.02 1" solimp="0.9 0.95 0.001" friction="1.0 0.003 0.002"
+          priority="1" />
+    <default class="visual">
+      <geom contype="0" conaffinity="0" group="2" density="0" />
+    </default>
+    <default class="collision">
+      <geom contype="0" conaffinity="1" group="1" density="0" />
+    </default>
+  </default>
+  <size njmax="1000" nconmax="1000" />
+  <compiler angle="radian" meshdir="../meshes/" />
+  <asset>
+    <mesh name="left_hand_base" file="left_hand_base.STL" />
+    <mesh name="l_f_link1_1" file="l_f_link1_1.STL" />
+    <mesh name="l_f_link1_2" file="l_f_link1_2.STL" />
+    <mesh name="l_f_link1_3" file="l_f_link1_3.STL" />
+    <mesh name="l_f_link1_4" file="l_f_link1_4.STL" />
+    <mesh name="l_f_link2_1" file="l_f_link2_1.STL" />
+    <mesh name="l_f_link2_2" file="l_f_link2_2.STL" />
+    <mesh name="l_f_link2_3" file="l_f_link2_3.STL" />
+    <mesh name="l_f_link2_4" file="l_f_link2_4.STL" />
+    <mesh name="l_f_link3_1" file="l_f_link3_1.STL" />
+    <mesh name="l_f_link3_2" file="l_f_link3_2.STL" />
+    <mesh name="l_f_link3_3" file="l_f_link3_3.STL" />
+    <mesh name="l_f_link3_4" file="l_f_link3_4.STL" />
+    <mesh name="l_f_link4_1" file="l_f_link4_1.STL" />
+    <mesh name="l_f_link4_2" file="l_f_link4_2.STL" />
+    <mesh name="l_f_link4_3" file="l_f_link4_3.STL" />
+    <mesh name="l_f_link4_4" file="l_f_link4_4.STL" />
+    <mesh name="l_f_link5_1" file="l_f_link5_1.STL" />
+    <mesh name="l_f_link5_2" file="l_f_link5_2.STL" />
+    <mesh name="l_f_link5_3" file="l_f_link5_3.STL" />
+    <mesh name="l_f_link5_4" file="l_f_link5_4.STL" />
+    <mesh name="left_hand_base_convex" file="left_hand_base_convex.STL" />
+    <mesh name="l_f_link1_1_convex" file="l_f_link1_1_convex.STL" />
+    <mesh name="l_f_link1_2_convex" file="l_f_link1_2_convex.STL" />
+    <mesh name="l_f_link1_3_convex" file="l_f_link1_3_convex.STL" />
+    <mesh name="l_f_link1_4_convex" file="l_f_link1_4_convex.STL" />
+    <mesh name="l_f_link2_1_convex" file="l_f_link2_1_convex.STL" />
+    <mesh name="l_f_link2_2_convex" file="l_f_link2_2_convex.STL" />
+    <mesh name="l_f_link2_3_convex" file="l_f_link2_3_convex.STL" />
+    <mesh name="l_f_link2_4_convex" file="l_f_link2_4_convex.STL" />
+    <mesh name="l_f_link3_1_convex" file="l_f_link3_1_convex.STL" />
+    <mesh name="l_f_link3_2_convex" file="l_f_link3_2_convex.STL" />
+    <mesh name="l_f_link3_3_convex" file="l_f_link3_3_convex.STL" />
+    <mesh name="l_f_link3_4_convex" file="l_f_link3_4_convex.STL" />
+    <mesh name="l_f_link4_1_convex" file="l_f_link4_1_convex.STL" />
+    <mesh name="l_f_link4_2_convex" file="l_f_link4_2_convex.STL" />
+    <mesh name="l_f_link4_3_convex" file="l_f_link4_3_convex.STL" />
+    <mesh name="l_f_link4_4_convex" file="l_f_link4_4_convex.STL" />
+    <mesh name="l_f_link5_1_convex" file="l_f_link5_1_convex.STL" />
+    <mesh name="l_f_link5_2_convex" file="l_f_link5_2_convex.STL" />
+    <mesh name="l_f_link5_3_convex" file="l_f_link5_3_convex.STL" />
+    <mesh name="l_f_link5_4_convex" file="l_f_link5_4_convex.STL" />
+  </asset>
+  <worldbody>
+    <body name="left_hand_base" pos="0 0 0" quat="1 0 0 0">
+      <geom name="left_hand_base_visual" type="mesh" mesh="left_hand_base" contype="0" conaffinity="0" group="2" density="0" rgba="0.75294 0.75294 0.75294 1" class="visual" />
+      <geom name="left_hand_base_collision" type="mesh" mesh="left_hand_base_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+      <body name="l_f_link1_1" pos="0.032783 -0.023781 0.11211" quat="0.775383 -0.151562 0.0221299 -0.612635">
+        <inertial pos="0.00198057 -0.000351992 -0.0134513" quat="0.716547 0.0775675 0.0530798 0.691178" mass="0.00440965" diaginertia="4.39524e-07 3.79859e-07 1.98262e-07" />
+        <joint name="l_f_joint1_1" class="direct_drive" pos="0 0 0" axis="0 0 1" range="0 2.2" actuatorfrcrange="-10 10" />
+        <geom name="l_f_link1_1_visual" type="mesh" mesh="l_f_link1_1" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+        <geom name="l_f_link1_1_collision" type="mesh" mesh="l_f_link1_1_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+        <body name="l_f_link1_2" pos="0.0083307 0 0" quat="0.707105 0.707108 0 0">
+          <inertial pos="0.021435 0.000179938 0.0012982" quat="0.016958 0.707385 -0.0126923 0.706511" mass="0.00995163" diaginertia="1.70991e-06 1.65549e-06 6.19029e-07" />
+          <joint name="l_f_joint1_2" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+          <geom name="l_f_link1_2_visual" type="mesh" mesh="l_f_link1_2" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+          <geom name="l_f_link1_2_collision" type="mesh" mesh="l_f_link1_2_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+          <body name="l_f_link1_3" pos="0.043 0 0">
+            <inertial pos="0.0134587 -0.000699415 0.00129313" quat="0.0207134 0.706891 -0.0204889 0.706722" mass="0.00457275" diaginertia="3.79726e-07 3.56511e-07 2.03184e-07" />
+            <joint name="l_f_joint1_3" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+            <geom name="l_f_link1_3_visual" type="mesh" mesh="l_f_link1_3" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+            <geom name="l_f_link1_3_collision" type="mesh" mesh="l_f_link1_3_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+            <body name="l_f_link1_4" pos="0.025 0 0">
+              <inertial pos="0.0167833 -0.00318009 0.00181094" quat="0.630522 0.468826 0.519894 0.335191" mass="0.00715824" diaginertia="7.99378e-07 7.54706e-07 3.17055e-07" />
+              <joint name="l_f_joint1_4" class="passive_linkage" pos="0 0 0" axis="0 0 1" range="0 1.2" actuatorfrcrange="-10 10" />
+              <geom name="l_f_link1_4_visual" type="mesh" mesh="l_f_link1_4" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+              <geom name="l_f_link1_4_collision" type="mesh" mesh="l_f_link1_4_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+              <body name="l_f_link1_pad" pos="0.026 0.0025 0.001" quat="0.9747941071 0 0 -0.2231063621">
+                <inertial pos="0 0 0" quat="1 0 0 0" mass="0.001" diaginertia="1e-09 1e-09 1e-09" />
+                <geom name="l_f_link1_pad_visual" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="0" group="2" density="0" rgba="0 1 0 1" class="visual" />
+                <geom name="l_f_link1_pad_collision" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="1" group="1" density="0" rgba="0 1 0 0.35" class="collision" />
+                <site name="site_l_f_link1_pad" type="box" size="0.006 0.0005 0.003" pos="0 0 0" rgba="0 1 0 0.35" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="l_f_link2_1" pos="0.006966 -0.034912 0.1644" quat="-2.59734e-06 0.707105 2.59735e-06 0.707108">
+        <inertial pos="0.00700212 1.08537e-07 -0.00096856" quat="0.370763 0.602117 0.602108 0.370749" mass="0.00409701" diaginertia="3.18122e-07 2.71723e-07 2.04204e-07" />
+        <joint name="l_f_joint2_1" class="direct_drive" pos="0 0 0" axis="0 0 1" range="0 0.316" actuatorfrcrange="-10 10" />
+        <geom name="l_f_link2_1_visual" type="mesh" mesh="l_f_link2_1" contype="0" conaffinity="0" group="2" density="0" rgba="0.792157 0.819608 0.933333 1" class="visual" />
+        <geom name="l_f_link2_1_collision" type="mesh" mesh="l_f_link2_1_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+        <body name="l_f_link2_2" pos="0.017 0 0" quat="0.707105 0.707108 0 0">
+          <inertial pos="0.0211622 -0.000590378 2.72622e-06" quat="0.502474 0.508577 0.49194 0.496854" mass="0.0094283" diaginertia="1.65781e-06 1.64333e-06 5.5432e-07" />
+          <joint name="l_f_joint2_2" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+          <geom name="l_f_link2_2_visual" type="mesh" mesh="l_f_link2_2" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+          <geom name="l_f_link2_2_collision" type="mesh" mesh="l_f_link2_2_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+          <body name="l_f_link2_3" pos="0.043 0 0">
+            <inertial pos="0.0134587 -0.000699415 7.12893e-07" quat="0.0207134 0.706891 -0.0204889 0.706722" mass="0.00457275" diaginertia="3.79726e-07 3.56511e-07 2.03184e-07" />
+            <joint name="l_f_joint2_3" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+            <geom name="l_f_link2_3_visual" type="mesh" mesh="l_f_link2_3" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+            <geom name="l_f_link2_3_collision" type="mesh" mesh="l_f_link2_3_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+            <body name="l_f_link2_4" pos="0.025 0 0">
+              <inertial pos="0.0167833 -0.00318009 0.000699111" quat="0.634953 0.463467 0.52111 0.332381" mass="0.00715824" diaginertia="8.11162e-07 7.52749e-07 3.26586e-07" />
+              <joint name="l_f_joint2_4" class="passive_linkage" pos="0 0 0" axis="0 0 1" range="0 1.2" actuatorfrcrange="-10 10" />
+              <geom name="l_f_link2_4_visual" type="mesh" mesh="l_f_link2_4" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+              <geom name="l_f_link2_4_collision" type="mesh" mesh="l_f_link2_4_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+              <body name="l_f_link2_pad" pos="0.026 0.0025 0.000" quat="0.9747941071 0 0 -0.2231063621">
+                <inertial pos="0 0 0" quat="1 0 0 0" mass="0.001" diaginertia="1e-09 1e-09 1e-09" />
+                <geom name="l_f_link2_pad_visual" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="0" group="2" density="0" rgba="0 1 0 1" class="visual" />
+                <geom name="l_f_link2_pad_collision" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="1" group="1" density="0" rgba="0 1 0 0.35" class="collision" />
+                <site name="site_l_f_link2_pad" type="box" size="0.006 0.0005 0.003" pos="0 0 0" rgba="0 1 0 0.35" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="l_f_link3_1" pos="0.006966 -0.010612 0.1734" quat="-2.59734e-06 0.707105 2.59735e-06 0.707108">
+        <inertial pos="0.00700212 1.07469e-07 -0.000968557" quat="0.370763 0.602117 0.602109 0.370749" mass="0.00409701" diaginertia="3.18122e-07 2.71723e-07 2.04204e-07" />
+        <geom name="l_f_link3_1_visual" type="mesh" mesh="l_f_link3_1" contype="0" conaffinity="0" group="2" density="0" rgba="0.792157 0.819608 0.933333 1" class="visual" />
+        <geom name="l_f_link3_1_collision" type="mesh" mesh="l_f_link3_1_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+        <body name="l_f_link3_2" pos="0.017 0 0" quat="0.707105 0.707108 0 0">
+          <inertial pos="0.0211622 -0.000590378 2.72622e-06" quat="0.502474 0.508577 0.49194 0.496854" mass="0.0094283" diaginertia="1.65781e-06 1.64333e-06 5.5432e-07" />
+          <joint name="l_f_joint3_2" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+          <geom name="l_f_link3_2_visual" type="mesh" mesh="l_f_link3_2" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+          <geom name="l_f_link3_2_collision" type="mesh" mesh="l_f_link3_2_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+          <body name="l_f_link3_3" pos="0.043 0 0">
+            <inertial pos="0.0134587 -0.000699415 7.12894e-07" quat="0.0207134 0.706891 -0.0204889 0.706722" mass="0.00457275" diaginertia="3.79726e-07 3.56511e-07 2.03184e-07" />
+            <joint name="l_f_joint3_3" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+            <geom name="l_f_link3_3_visual" type="mesh" mesh="l_f_link3_3" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+            <geom name="l_f_link3_3_collision" type="mesh" mesh="l_f_link3_3_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+            <body name="l_f_link3_4" pos="0.025 0 0">
+              <inertial pos="0.0167833 -0.00318009 0.000699111" quat="0.634953 0.463467 0.52111 0.332381" mass="0.00715824" diaginertia="8.11162e-07 7.52749e-07 3.26586e-07" />
+              <joint name="l_f_joint3_4" class="passive_linkage" pos="0 0 0" axis="0 0 1" range="0 1.2" actuatorfrcrange="-10 10" />
+              <geom name="l_f_link3_4_visual" type="mesh" mesh="l_f_link3_4" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+              <geom name="l_f_link3_4_collision" type="mesh" mesh="l_f_link3_4_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+              <body name="l_f_link3_pad" pos="0.026 0.0025 0.000" quat="0.9747941071 0 0 -0.2231063621">
+                <inertial pos="0 0 0" quat="1 0 0 0" mass="0.001" diaginertia="1e-09 1e-09 1e-09" />
+                <geom name="l_f_link3_pad_visual" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="0" group="2" density="0" rgba="0 1 0 1" class="visual" />
+                <geom name="l_f_link3_pad_collision" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="1" group="1" density="0" rgba="0 1 0 0.35" class="collision" />
+                <site name="site_l_f_link3_pad" type="box" size="0.006 0.0005 0.003" pos="0 0 0" rgba="0 1 0 0.35" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="l_f_link4_1" pos="0.006966 0.013688 0.1644" quat="0.707105 0 -0.707108 0">
+        <inertial pos="0.00700212 -1.07487e-07 0.000968558" quat="0.602109 0.370749 0.370763 0.602117" mass="0.00409701" diaginertia="3.18122e-07 2.71723e-07 2.04204e-07" />
+        <joint name="l_f_joint4_1" class="passive_linkage" pos="0 0 0" axis="0 0 1" range="0 0.316" actuatorfrcrange="-10 10" />
+        <geom name="l_f_link4_1_visual" type="mesh" mesh="l_f_link4_1" contype="0" conaffinity="0" group="2" density="0" rgba="0.792157 0.819608 0.933333 1" class="visual" />
+        <geom name="l_f_link4_1_collision" type="mesh" mesh="l_f_link4_1_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+        <body name="l_f_link4_2" pos="0.017 0 0" quat="0.707105 -0.707108 0 0">
+          <inertial pos="0.0211622 -0.000590378 2.72622e-06" quat="0.502474 0.508577 0.49194 0.496854" mass="0.0094283" diaginertia="1.65781e-06 1.64333e-06 5.5432e-07" />
+          <joint name="l_f_joint4_2" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+          <geom name="l_f_link4_2_visual" type="mesh" mesh="l_f_link4_2" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+          <geom name="l_f_link4_2_collision" type="mesh" mesh="l_f_link4_2_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+          <body name="l_f_link4_3" pos="0.043 0 0">
+            <inertial pos="0.0134587 -0.000699415 7.12894e-07" quat="0.0207134 0.706891 -0.0204889 0.706722" mass="0.00457275" diaginertia="3.79726e-07 3.56511e-07 2.03184e-07" />
+            <joint name="l_f_joint4_3" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+            <geom name="l_f_link4_3_visual" type="mesh" mesh="l_f_link4_3" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+            <geom name="l_f_link4_3_collision" type="mesh" mesh="l_f_link4_3_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+            <body name="l_f_link4_4" pos="0.025 0 0">
+              <inertial pos="0.0167833 -0.00318009 0.000699111" quat="0.634953 0.463467 0.52111 0.332381" mass="0.00715824" diaginertia="8.11162e-07 7.52749e-07 3.26586e-07" />
+              <joint name="l_f_joint4_4" class="passive_linkage" pos="0 0 0" axis="0 0 1" range="0 1.2" actuatorfrcrange="-10 10" />
+              <geom name="l_f_link4_4_visual" type="mesh" mesh="l_f_link4_4" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+              <geom name="l_f_link4_4_collision" type="mesh" mesh="l_f_link4_4_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+              <body name="l_f_link4_pad" pos="0.026 0.0025 0.000" quat="0.9747941071 0 0 -0.2231063621">
+                <inertial pos="0 0 0" quat="1 0 0 0" mass="0.001" diaginertia="1e-09 1e-09 1e-09" />
+                <geom name="l_f_link4_pad_visual" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="0" group="2" density="0" rgba="0 1 0 1" class="visual" />
+                <geom name="l_f_link4_pad_collision" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="1" group="1" density="0" rgba="0 1 0 0.35" class="collision" />
+                <site name="site_l_f_link4_pad" type="box" size="0.006 0.0005 0.003" pos="0 0 0" rgba="0 1 0 0.35" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="l_f_link5_1" pos="0.006966 0.037988 0.1504" quat="0.707105 0 -0.707108 0">
+        <inertial pos="0.00700212 -1.08915e-07 0.000968551" quat="0.602109 0.370749 0.370763 0.602117" mass="0.00409701" diaginertia="3.18122e-07 2.71723e-07 2.04203e-07" />
+        <joint name="l_f_joint5_1" class="passive_linkage" pos="0 0 0" axis="0 0 1" range="0 0.6" actuatorfrcrange="-10 10" />
+        <geom name="l_f_link5_1_visual" type="mesh" mesh="l_f_link5_1" contype="0" conaffinity="0" group="2" density="0" rgba="0.792157 0.819608 0.933333 1" class="visual" />
+        <geom name="l_f_link5_1_collision" type="mesh" mesh="l_f_link5_1_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+        <body name="l_f_link5_2" pos="0.017 0 0" quat="0.707105 -0.707108 0 0">
+          <inertial pos="0.0211622 -0.000590378 2.72622e-06" quat="0.502474 0.508577 0.49194 0.496854" mass="0.0094283" diaginertia="1.65781e-06 1.64333e-06 5.5432e-07" />
+          <joint name="l_f_joint5_2" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+          <geom name="l_f_link5_2_visual" type="mesh" mesh="l_f_link5_2" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+          <geom name="l_f_link5_2_collision" type="mesh" mesh="l_f_link5_2_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+          <body name="l_f_link5_3" pos="0.043 0 0">
+            <inertial pos="0.0134587 -0.000699415 7.12894e-07" quat="0.0207134 0.706891 -0.0204889 0.706722" mass="0.00457275" diaginertia="3.79726e-07 3.56511e-07 2.03184e-07" />
+            <joint name="l_f_joint5_3" class="tendon_flexion" pos="0 0 0" axis="0 0 1" range="0 1.3" actuatorfrcrange="-10 10" />
+            <geom name="l_f_link5_3_visual" type="mesh" mesh="l_f_link5_3" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+            <geom name="l_f_link5_3_collision" type="mesh" mesh="l_f_link5_3_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+            <body name="l_f_link5_4" pos="0.025 0 0">
+              <inertial pos="0.0167833 -0.00318009 0.000699111" quat="0.634953 0.463467 0.52111 0.332381" mass="0.00715824" diaginertia="8.11162e-07 7.52749e-07 3.26586e-07" />
+              <joint name="l_f_joint5_4" class="passive_linkage" pos="0 0 0" axis="0 0 1" range="0 1.2" actuatorfrcrange="-10 10" />
+              <geom name="l_f_link5_4_visual" type="mesh" mesh="l_f_link5_4" contype="0" conaffinity="0" group="2" density="0" rgba="0.6 0.6 0.6 1" class="visual" />
+              <geom name="l_f_link5_4_collision" type="mesh" mesh="l_f_link5_4_convex" contype="0" conaffinity="1" group="1" density="0" class="collision" />
+              <body name="l_f_link5_pad" pos="0.026 0.0025 0.000" quat="0.9747941071 0 0 -0.2231063621">
+                <inertial pos="0 0 0" quat="1 0 0 0" mass="0.001" diaginertia="1e-09 1e-09 1e-09" />
+                <geom name="l_f_link5_pad_visual" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="0" group="2" density="0" rgba="0 1 0 1" class="visual" />
+                <geom name="l_f_link5_pad_collision" type="box" size="0.006 0.0005 0.003" contype="0" conaffinity="1" group="1" density="0" rgba="0 1 0 0.35" class="collision" />
+                <site name="site_l_f_link5_pad" type="box" size="0.006 0.0005 0.003" pos="0 0 0" rgba="0 1 0 0.35" />
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    <joint joint1="l_f_joint4_1" joint2="l_f_joint2_1" polycoef="0 1 0 0 0" solimp="0.95 0.99 0.001" solref="0.005 1" />
+    <joint joint1="l_f_joint5_1" joint2="l_f_joint2_1" polycoef="0.0022 2.1798 -1.0491 0 0" solimp="0.95 0.99 0.001" solref="0.005 1" />
+    <joint joint1="l_f_joint1_4" joint2="l_f_joint1_3" polycoef="0.0001 0.6446 0.2340 -0.0631 0.0359" solimp="0.95 0.99 0.001" solref="0.005 1" />
+    <joint joint1="l_f_joint2_4" joint2="l_f_joint2_3" polycoef="0.0001 0.6446 0.2340 -0.0631 0.0359" solimp="0.95 0.99 0.001" solref="0.005 1" />
+    <joint joint1="l_f_joint3_4" joint2="l_f_joint3_3" polycoef="0.0001 0.6446 0.2340 -0.0631 0.0359" solimp="0.95 0.99 0.001" solref="0.005 1" />
+    <joint joint1="l_f_joint4_4" joint2="l_f_joint4_3" polycoef="0.0001 0.6446 0.2340 -0.0631 0.0359" solimp="0.95 0.99 0.001" solref="0.005 1" />
+    <joint joint1="l_f_joint5_4" joint2="l_f_joint5_3" polycoef="0.0001 0.6446 0.2340 -0.0631 0.0359" solimp="0.95 0.99 0.001" solref="0.005 1" />
+  </equality>
+  <!-- <dcmotor input="position"> actuators.  nominal = (voltage, stall
+       torque, no-load speed); the no-load speeds were measured on the hardware
+       one joint at a time with an empty hand (p90 over the joint's travel):
+
+         group                no-load speed (rad/s)
+         *_2 MCP flexion          5.15
+         *_3 PIP (DIP linked)     5.13
+         1_1 thumb rotation       6.93
+         2_1 abduction            1.17
+
+       The hardware is asymmetric (flexion faster than extension), which a
+       <dcmotor> envelope cannot express.  Stall torques are derived from the
+       published cable tension, not measured; thumb rotation and abduction are
+       estimates. -->
+  <actuator>
+    <!-- finger 1 MCP flexion, cable: 10 N at 94 mm -->
+    <dcmotor name="act_l_f_joint1_2" joint="l_f_joint1_2" input="position"
+             nominal="24 0.9 7.06" saturation="0.9 0 0"
+             controller="80 0 2.66667 0 0 24" ctrlrange="0 1.3" />
+    <!-- finger 1 PIP (DIP linked), cable: 10 N at 56-103 mm -->
+    <dcmotor name="act_l_f_joint1_3" joint="l_f_joint1_3" input="position"
+             nominal="24 0.6 14.79" saturation="0.6 0 0"
+             controller="120 0 4 0 0 24" ctrlrange="0 1.3" />
+    <!-- finger 2 MCP flexion, cable: 10 N at 94 mm -->
+    <dcmotor name="act_l_f_joint2_2" joint="l_f_joint2_2" input="position"
+             nominal="24 0.9 7.06" saturation="0.9 0 0"
+             controller="80 0 2.66667 0 0 24" ctrlrange="0 1.3" />
+    <!-- finger 2 PIP (DIP linked), cable: 10 N at 56-103 mm -->
+    <dcmotor name="act_l_f_joint2_3" joint="l_f_joint2_3" input="position"
+             nominal="24 0.6 14.79" saturation="0.6 0 0"
+             controller="120 0 4 0 0 24" ctrlrange="0 1.3" />
+    <!-- finger 3 MCP flexion, cable: 10 N at 94 mm -->
+    <dcmotor name="act_l_f_joint3_2" joint="l_f_joint3_2" input="position"
+             nominal="24 0.9 7.06" saturation="0.9 0 0"
+             controller="80 0 2.66667 0 0 24" ctrlrange="0 1.3" />
+    <!-- finger 3 PIP (DIP linked), cable: 10 N at 56-103 mm -->
+    <dcmotor name="act_l_f_joint3_3" joint="l_f_joint3_3" input="position"
+             nominal="24 0.6 14.79" saturation="0.6 0 0"
+             controller="120 0 4 0 0 24" ctrlrange="0 1.3" />
+    <!-- finger 4 MCP flexion, cable: 10 N at 94 mm -->
+    <dcmotor name="act_l_f_joint4_2" joint="l_f_joint4_2" input="position"
+             nominal="24 0.9 7.06" saturation="0.9 0 0"
+             controller="80 0 2.66667 0 0 24" ctrlrange="0 1.3" />
+    <!-- finger 4 PIP (DIP linked), cable: 10 N at 56-103 mm -->
+    <dcmotor name="act_l_f_joint4_3" joint="l_f_joint4_3" input="position"
+             nominal="24 0.6 14.79" saturation="0.6 0 0"
+             controller="120 0 4 0 0 24" ctrlrange="0 1.3" />
+    <!-- finger 5 MCP flexion, cable: 10 N at 94 mm -->
+    <dcmotor name="act_l_f_joint5_2" joint="l_f_joint5_2" input="position"
+             nominal="24 0.9 7.06" saturation="0.9 0 0"
+             controller="80 0 2.66667 0 0 24" ctrlrange="0 1.3" />
+    <!-- finger 5 PIP (DIP linked), cable: 10 N at 56-103 mm -->
+    <dcmotor name="act_l_f_joint5_3" joint="l_f_joint5_3" input="position"
+             nominal="24 0.6 14.79" saturation="0.6 0 0"
+             controller="120 0 4 0 0 24" ctrlrange="0 1.3" />
+    <!-- thumb CMR, worm direct drive (unconfirmed) -->
+    <dcmotor name="act_l_f_joint1_1" joint="l_f_joint1_1" input="position"
+             nominal="24 1.2 8.98" saturation="1.2 0 0"
+             controller="60 0 2 0 0 24" ctrlrange="0 2.2" />
+    <!-- four-finger abduction, ball screw (unconfirmed) -->
+    <dcmotor name="act_l_f_joint2_1" joint="l_f_joint2_1" input="position"
+             nominal="24 0.8 3.99" saturation="0.8 0 0"
+             controller="90 0 3 0 0 24" ctrlrange="0 0.316" />
+  </actuator>
+  <sensor>
+    <!-- Default for MuJoCo-Warp/MJLab RL: 3D net contact force in world frame over each pad site. -->
+    <contact name="contact_l_f_link1_pad_force" site="site_l_f_link1_pad" data="force" reduce="netforce" />
+    <contact name="contact_l_f_link2_pad_force" site="site_l_f_link2_pad" data="force" reduce="netforce" />
+    <contact name="contact_l_f_link3_pad_force" site="site_l_f_link3_pad" data="force" reduce="netforce" />
+    <contact name="contact_l_f_link4_pad_force" site="site_l_f_link4_pad" data="force" reduce="netforce" />
+    <contact name="contact_l_f_link5_pad_force" site="site_l_f_link5_pad" data="force" reduce="netforce" />
+    <!-- Alternative normal-only scalar:
+    <touch name="touch_l_f_link1_pad" site="site_l_f_link1_pad" />
+    <touch name="touch_l_f_link2_pad" site="site_l_f_link2_pad" />
+    <touch name="touch_l_f_link3_pad" site="site_l_f_link3_pad" />
+    <touch name="touch_l_f_link4_pad" site="site_l_f_link4_pad" />
+    <touch name="touch_l_f_link5_pad" site="site_l_f_link5_pad" />
+    -->
+    <!-- Alternative binary contact:
+    <contact name="contact_l_f_link1_pad_found" site="site_l_f_link1_pad" data="found" />
+    <contact name="contact_l_f_link2_pad_found" site="site_l_f_link2_pad" data="found" />
+    <contact name="contact_l_f_link3_pad_found" site="site_l_f_link3_pad" data="found" />
+    <contact name="contact_l_f_link4_pad_found" site="site_l_f_link4_pad" data="found" />
+    <contact name="contact_l_f_link5_pad_found" site="site_l_f_link5_pad" data="found" />
+    -->
+  </sensor>
+</mujoco>

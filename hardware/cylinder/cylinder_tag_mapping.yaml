@@ -1,0 +1,14 @@
+family: tag36h11
+payload_source: OpenCV 4.12 DICT_APRILTAG_36h11 generateImageMarker
+layout: 10x10 complete image with one-module white border
+print_scale: 1.0
+physical_label_shape: circle
+physical_label_diameter_m: 0.058
+cut_line: continuous black circle, 0.3 mm wide
+complete_tag_image_size_m: 0.036
+detector_tag_size_m: 0.0288
+proposed_faces:
+  top:
+    id: 6
+  bottom:
+    id: 7
